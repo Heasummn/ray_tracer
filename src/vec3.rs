@@ -1,9 +1,7 @@
-extern crate image;
 use std::cmp;
 use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
-use image::Rgb;
 // Vec3 class for storing data, such as colors or location
 
 #[derive(Default)]
@@ -73,9 +71,10 @@ impl fmt::Debug for Vec3 {
   }
 }
 
-impl From<Vec3> for Rgb<u8> {
+#[cfg(feature = "image")]
+impl From<Vec3> for image::Rgb<u8> {
   fn from(vec: Vec3) -> Self {
-    return Rgb([vec.x as u8, vec.y as u8, vec.z as u8]);
+    return image::Rgb([vec.x as u8, vec.y as u8, vec.z as u8]);
   }
 }
 
