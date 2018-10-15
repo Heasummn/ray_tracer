@@ -5,7 +5,8 @@ mod vec3;
 fn main() {
     let width: u32 = 1600;
     let height: u32 = 800;
-    let mut imgbuf = image::RgbImage::new(width, height);
+    let mut dynamic_image = image::DynamicImage::new_rgb8(width, height);
+    let imgbuf = dynamic_image.as_mut_rgb8().unwrap();
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let data = vec3::Vec3 {
@@ -14,7 +15,7 @@ fn main() {
             z: 0.2,
         } * 255.0;
 
-        //println!("R: {}, G: {}, B: {}", r, g, b);
+        //println!("{:#?}", data);
         *pixel = data.into();
     }
 
