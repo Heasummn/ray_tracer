@@ -1,17 +1,21 @@
 extern crate image;
 
+mod vec3;
+
 fn main() {
     let width: u32 = 1600;
     let height: u32 = 800;
     let mut imgbuf = image::RgbImage::new(width, height);
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = ((x as f32 / width as f32) * 255.0) as u8;
-        let g = (((height - y) as f32 / height as f32) * 255.0) as u8;
-        let b = (255.0 * 0.2) as u8;
+        let data = vec3::Vec3 {
+            x: (x as f64 / width as f64),
+            y: ((height - y) as f64) / height as f64,
+            z: 0.2,
+        } * 255.0;
 
         //println!("R: {}, G: {}, B: {}", r, g, b);
-        *pixel = image::Rgb([r, g, b]);
+        *pixel = data.into();
     }
 
     imgbuf.save("output.png").unwrap();
