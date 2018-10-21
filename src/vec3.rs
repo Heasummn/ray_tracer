@@ -4,7 +4,7 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 
 // Vec3 class for storing data, such as colors or location
 
-#[derive(Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Vec3 {
   pub x: f64,
   pub y: f64,
