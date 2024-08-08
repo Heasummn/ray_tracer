@@ -2,8 +2,10 @@ extern crate image;
 
 mod camera;
 mod ray;
-mod sphere;
 mod vec3;
+mod sphere;
+
+use crate::ray::Hittable;
 
 fn main() {
     let width: u32 = 800;
@@ -24,7 +26,7 @@ fn main() {
     for x in 0..camera.width {
         for y in 0..camera.height {
             let ray = camera.get_ray(x, y);
-            if sphere.intersects(&ray) {
+            if sphere.hit(&ray, 0.0, 0.0) {
                 imgbuf.put_pixel(x, y, image::Rgb([255, 0, 0]))
             } else {
                 imgbuf.put_pixel(x, y, image::Rgb([0, 0, 0]))

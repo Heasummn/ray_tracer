@@ -2,7 +2,7 @@
 name = "ray_tracer"
 version = "0.1.0"
 authors = ["Heasummn <hassamuddin20@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [features]
 default = ["image"]
