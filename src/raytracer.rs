@@ -1,4 +1,4 @@
-use crate::{camera::{self, Camera}, hittable_list::HittableList, ray::{self, Hittable}, vec3::Vec3};
+use crate::{camera::Camera, hittable_list::HittableList, ray::{self, Hittable}, util::Interval, vec3::Vec3};
 
 pub struct Raytracer {
     camera: Camera,
@@ -12,7 +12,7 @@ impl Raytracer {
   }
 
     fn ray_color(ray: ray::Ray, world: &HittableList) -> image::Rgb<u8> {
-        let t = world.hit(&ray, 0.0, f64::INFINITY);
+        let t = world.hit(&ray, Interval::new(0.0, f64::INFINITY));
         if let Some(hr) = t {
             return ((0.5 * (hr.normal + Vec3::ones()))).into();
         }

@@ -6,13 +6,11 @@ mod raytracer;
 mod vec3;
 mod sphere;
 mod hittable_list;
-
-use core::f64;
+mod util;
 
 use hittable_list::HittableList;
 use sphere::Sphere;
 
-use crate::ray::Hittable;
 use crate::vec3::Vec3;
 
 fn main() {

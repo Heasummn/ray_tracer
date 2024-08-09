@@ -1,4 +1,5 @@
 use crate::ray::{HitRecord, Ray};
+use crate::util::Interval;
 use crate::vec3::Vec3;
 
 use crate::ray::Hittable;
@@ -18,7 +19,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-  fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+  fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
     let oc = ray.origin - self.position;
     let a = ray.direction.norm();
     let h = oc.dot(&ray.direction);
@@ -32,16 +33,16 @@ impl Hittable for Sphere {
     let sqrtd = disc.sqrt();
     // Find the nearest root that lies in the acceptable range
     let mut root = (-h - sqrtd) / a;
-    if (root <= t_min) || (root >= t_max) {
+    if !ray_t.surrounds(root) {
       root = (-h + sqrtd) / a;
-      if (root <= t_min) || (root >= t_max) {
+      if !ray_t.surrounds(root) {
         return None
       }
     }
 
     return Some(HitRecord::new(root, 
       ray, 
-      ((ray.at(root) - self.position) / self.radius)
+      (ray.at(root) - self.position) / self.radius
     ));
   }
 
