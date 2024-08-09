@@ -70,6 +70,49 @@ impl Vec3 {
       z: self.x * other.y - self.y * other.x,
     }
   }
+
+  pub fn random() -> Vec3 {
+    Vec3 {
+      x: rand::random::<f64>(),
+      y: rand::random::<f64>(),
+      z: rand::random::<f64>(),
+    }
+  }
+
+  pub fn random_range(min: f64, max: f64) -> Vec3 {
+    Vec3 {
+      x: rand::random::<f64>() * (max - min) + min,
+      y: rand::random::<f64>() * (max - min) + min,
+      z: rand::random::<f64>() * (max - min) + min,
+    }
+  }
+
+  pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+      let p = Vec3::random_range(-1.0, 1.0);
+      if p.norm() < 1.0 {
+        return p;
+      }
+    }
+  }
+
+  pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
+    let on_unit_sphere = Vec3::random_in_unit_sphere().as_unit();
+    if on_unit_sphere.dot(&normal) > 0.0 {
+      return on_unit_sphere;
+    } else {
+      return -on_unit_sphere;
+    }
+  }
+
+  pub fn near_zero(&self) -> bool {
+    const S: f64 = 1e-8;
+    return self.x.abs() < S && self.y.abs() < S && self.z.abs() < S;
+  }
+
+  pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+    return *self - *normal * 2.0 * self.dot(normal);
+  }
 }
 
 impl Add for Vec3 {
@@ -97,10 +140,14 @@ impl Sub for Vec3 {
 }
 
 impl Mul<Vec3> for Vec3 {
-  type Output = f64;
+  type Output = Vec3;
 
-  fn mul(self, other: Vec3) -> f64 {
-    return self.x * other.x + self.y * other.y + self.z * other.z;
+  fn mul(self, other: Vec3) -> Vec3 {
+    return Vec3 {
+      x: self.x * other.x,
+      y: self.y * other.y,
+      z: self.z * other.z,
+    };
   }
 }
 
@@ -169,9 +216,9 @@ impl fmt::Debug for Vec3 {
 impl From<Vec3> for image::Rgb<u8> {
   fn from(vec: Vec3) -> Self {
     const INTENSITY: Interval = Interval {min: 0.0, max: 1.0};
-    let r = (INTENSITY.clamp(vec.x) * 255.0) as u8;
-    let g = (INTENSITY.clamp(vec.y) * 255.0) as u8;
-    let b = (INTENSITY.clamp(vec.z) * 255.0) as u8;
+    let r = (INTENSITY.clamp(vec.x).sqrt() * 255.0) as u8;
+    let g = (INTENSITY.clamp(vec.y).sqrt() * 255.0) as u8;
+    let b = (INTENSITY.clamp(vec.z).sqrt() * 255.0) as u8;
     return image::Rgb([r, g, b]);
   }
 }

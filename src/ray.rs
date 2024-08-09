@@ -1,4 +1,4 @@
-use crate::{util::Interval, vec3::Vec3};
+use crate::{materials::Material, util::Interval, vec3::Vec3};
 
 pub struct Ray {
   pub origin: Vec3,
@@ -18,15 +18,16 @@ impl Ray {
   }
 }
 
-pub struct HitRecord {
+pub struct HitRecord<'material> {
   pub p: Vec3,
   pub normal: Vec3,
   pub t: f64,
   pub front_face: bool,
+  pub material: &'material Material,
 }
 
-impl HitRecord {
-  pub fn new(t: f64, ray: &Ray, outward_normal: Vec3) -> HitRecord {
+impl<'a> HitRecord<'a> {
+  pub fn new(t: f64, ray: &Ray, outward_normal: Vec3, material: &'a Material) -> HitRecord<'a> {
     let front_face = ray.direction.dot(&outward_normal) < 0.0;
     let normal = if front_face { outward_normal } else { -outward_normal };
     HitRecord {
@@ -34,6 +35,7 @@ impl HitRecord {
       p: ray.at(t),
       normal,
       front_face,
+      material,
     }
   }
 }

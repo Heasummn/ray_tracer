@@ -1,3 +1,4 @@
+use crate::materials::Material;
 use crate::ray::{HitRecord, Ray};
 use crate::util::Interval;
 use crate::vec3::Vec3;
@@ -7,13 +8,15 @@ use crate::ray::Hittable;
 pub struct Sphere  {
   pub position: Vec3,
   pub radius: f64,
+  pub material: Material,
 }
 
 impl Sphere {
-  pub fn new(position: Vec3, radius: f64) -> Sphere {
+  pub fn new(position: Vec3, radius: f64, material: Material) -> Sphere {
     Sphere {
       position,
       radius,
+      material
     }
   }
 }
@@ -42,7 +45,8 @@ impl Hittable for Sphere {
 
     return Some(HitRecord::new(root, 
       ray, 
-      (ray.at(root) - self.position) / self.radius
+      (ray.at(root) - self.position) / self.radius,
+      &self.material
     ));
   }
 
