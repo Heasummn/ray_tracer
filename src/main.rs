@@ -23,6 +23,6 @@ fn main() {
     world.add(Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
 
-    let raytracer = raytracer::Raytracer::new(camera);
+    let raytracer = raytracer::Raytracer::new(camera, 10);
     raytracer.render(&world);
 }

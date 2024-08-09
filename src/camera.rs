@@ -44,4 +44,11 @@ impl Camera {
     let direction = pixel_center - self.origin;
     return Ray::new(self.origin, direction);
   }
+
+  pub fn get_ray_with_offset(&self, x: u32, y: u32, offset: Vec3) -> Ray {
+    let pixel_center = self.pixel00_loc + ((offset.x + x as f64) * self.pixel_delta_u) + ((offset.y + y as f64) * self.pixel_delta_v);
+    let direction = pixel_center - self.origin;
+
+    return Ray::new(self.origin, direction);
+  }
 }

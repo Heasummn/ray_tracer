@@ -2,6 +2,8 @@ use std::cmp;
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
+use crate::util::Interval;
+
 // Vec3 class for storing data, such as colors or location
 
 #[derive(Copy, Clone, Default)]
@@ -166,7 +168,11 @@ impl fmt::Debug for Vec3 {
 #[cfg(feature = "image")]
 impl From<Vec3> for image::Rgb<u8> {
   fn from(vec: Vec3) -> Self {
-    return image::Rgb([(vec.x * 255.0) as u8, (vec.y * 255.0) as u8, (vec.z * 255.0) as u8]);
+    const INTENSITY: Interval = Interval {min: 0.0, max: 1.0};
+    let r = (INTENSITY.clamp(vec.x) * 255.0) as u8;
+    let g = (INTENSITY.clamp(vec.y) * 255.0) as u8;
+    let b = (INTENSITY.clamp(vec.z) * 255.0) as u8;
+    return image::Rgb([r, g, b]);
   }
 }
 
