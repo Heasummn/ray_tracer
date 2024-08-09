@@ -12,6 +12,11 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
+
+  pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
+    Vec3 { x, y, z }
+  }
+
   pub fn zeros() -> Vec3 {
     Vec3 {
       x: 0.0,
@@ -97,6 +102,18 @@ impl Mul<Vec3> for Vec3 {
   }
 }
 
+impl Mul<Vec3> for f64 {
+  type Output = Vec3;
+
+  fn mul(self, other: Vec3) -> Vec3 {
+    return Vec3 {
+      x: self * other.x,
+      y: self * other.y,
+      z: self * other.z,
+    };
+  }
+}
+
 impl Mul<f64> for Vec3 {
   type Output = Vec3;
 
@@ -144,10 +161,12 @@ impl fmt::Debug for Vec3 {
   }
 }
 
+
+// assumes vec is in range 0-1
 #[cfg(feature = "image")]
 impl From<Vec3> for image::Rgb<u8> {
   fn from(vec: Vec3) -> Self {
-    return image::Rgb([vec.x as u8, vec.y as u8, vec.z as u8]);
+    return image::Rgb([(vec.x * 255.0) as u8, (vec.y * 255.0) as u8, (vec.z * 255.0) as u8]);
   }
 }
 

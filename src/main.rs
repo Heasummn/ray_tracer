@@ -2,48 +2,29 @@ extern crate image;
 
 mod camera;
 mod ray;
+mod raytracer;
 mod vec3;
 mod sphere;
+mod hittable_list;
+
+use core::f64;
+
+use hittable_list::HittableList;
+use sphere::Sphere;
 
 use crate::ray::Hittable;
+use crate::vec3::Vec3;
 
 fn main() {
-    let width: u32 = 800;
-    let height: u32 = 800;
-    let mut dynamic_image = image::DynamicImage::new_rgb8(width, height);
-    let imgbuf = dynamic_image.as_mut_rgb8().unwrap();
+    let aspect_ratio = 16.0 / 9.0;
+    let width: u32 = 400;
+    let camera = camera::Camera::new(Vec3::zeros(), aspect_ratio, width, 2.0, 1.0);
 
-    let camera = camera::Camera::new(width, height, 90.0);
-    let sphere = sphere::Sphere {
-        position: vec3::Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: -5.0,
-        },
-        radius: 1.0,
-    };
+    let mut world = HittableList::new();
+    world.add(Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
-    for x in 0..camera.width {
-        for y in 0..camera.height {
-            let ray = camera.get_ray(x, y);
-            if sphere.hit(&ray, 0.0, 0.0) {
-                imgbuf.put_pixel(x, y, image::Rgb([255, 0, 0]))
-            } else {
-                imgbuf.put_pixel(x, y, image::Rgb([0, 0, 0]))
-            }
-        }
-    }
 
-    /*for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let data = vec3::Vec3 {
-            x: (x as f64 / width as f64),
-            y: ((height - y) as f64) / height as f64,
-            z: 0.2,
-        } * 255.0;
-    
-        //println!("{:#?}", data);
-        *pixel = data.into();
-    }*/
-
-    imgbuf.save("output.png").unwrap();
+    let raytracer = raytracer::Raytracer::new(camera);
+    raytracer.render(&world);
 }

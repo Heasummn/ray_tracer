@@ -13,11 +13,31 @@ impl Ray {
     }
   }
 
-  pub fn point_at_parameter(&self, t: f64) -> Vec3 {
+  pub fn at(&self, t: f64) -> Vec3 {
     self.origin + self.direction * t
   }
 }
 
+pub struct HitRecord {
+  pub p: Vec3,
+  pub normal: Vec3,
+  pub t: f64,
+  pub front_face: bool,
+}
+
+impl HitRecord {
+  pub fn new(t: f64, ray: &Ray, outward_normal: Vec3) -> HitRecord {
+    let front_face = ray.direction.dot(&outward_normal) < 0.0;
+    let normal = if front_face { outward_normal } else { -outward_normal };
+    HitRecord {
+      t,
+      p: ray.at(t),
+      normal,
+      front_face,
+    }
+  }
+}
+
 pub trait Hittable {
-  fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> bool;
+  fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }

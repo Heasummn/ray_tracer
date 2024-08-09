@@ -2,35 +2,46 @@ use crate::ray::Ray;
 use crate::vec3::Vec3;
 
 pub struct Camera {
-  // Eventually allow for moving of camera
-  pub width: u32,
-  pub height: u32,
-  pub fov: f64,
-  aspect_ratio: f64,
+  pub origin: Vec3,
+  // aspect_ratio: f64,
+  pub image_width: u32,
+  pub image_height: u32,
+  // focal_length: f64,
+  // viewport_height: f64,
+  // viewport_width: f64,
+  pixel_delta_u: Vec3,
+  pixel_delta_v: Vec3,
+  pixel00_loc: Vec3,
 }
 
 impl Camera {
-  pub fn new(width: u32, height: u32, fov: f64) -> Camera {
-    return Camera {
-      width: width,
-      height: height,
-      fov: fov,
-      aspect_ratio: (width as f64) / (height as f64),
-    };
+  pub fn new(origin: Vec3, aspect_ratio: f64, image_width: u32, viewport_height: f64, focal_length: f64) -> Camera {
+    let viewport_width = aspect_ratio * viewport_height;
+    let image_height = (image_width as f64 / aspect_ratio) as u32;
+
+    let viewport_u = Vec3 { x: viewport_width, y: 0.0, z: 0.0 };
+    let viewport_v = Vec3 { x: 0.0, y: -viewport_height, z: 0.0 };
+
+    let pixel_delta_u = viewport_u / (image_width as f64);
+    let pixel_delta_v = viewport_v / (image_height as f64);
+    let viewport_upper_left = origin - (Vec3 {x: 0.0, y: 0.0, z: focal_length}) - viewport_u/2.0 - viewport_v/2.0;
+    let pixel00_loc = viewport_upper_left + pixel_delta_u/2.0 + pixel_delta_v/2.0;
+    
+
+    Camera {
+      origin,
+      image_width,
+      image_height,
+      pixel_delta_u,
+      pixel_delta_v,
+      pixel00_loc,
+    }
   }
 
   // Makes use of basic trig to convert x/y to camera coords for ray
   pub fn get_ray(&self, x: u32, y: u32) -> Ray {
-    let fov_correction: f64 = (self.fov.to_radians() / 2.0).tan();
-    return Ray::new(Vec3::zeros(),
-      Vec3 {
-        x: (2.0 * ((x as f64 + 0.5) / (self.width as f64)) - 1.0) // converting (0, width) -> (-1, 1)
-          * fov_correction
-          * self.aspect_ratio, // correcting square size for non-square images
-        y: (1.0 - 2.0 * ((y as f64 + 0.5) / (self.height as f64))) * fov_correction,
-        z: -1.0,
-      }
-      .as_unit()
-    );
+    let pixel_center = self.pixel00_loc + (x as f64 * self.pixel_delta_u) + (y as f64 * self.pixel_delta_v);
+    let direction = pixel_center - self.origin;
+    return Ray::new(self.origin, direction);
   }
 }
