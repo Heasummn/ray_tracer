@@ -18,7 +18,7 @@ impl Raytracer {
     fn ray_color(ray: ray::Ray, world: &HittableList) -> Vec3 {
         let t = world.hit(&ray, Interval::new(0.0, f64::INFINITY));
         if let Some(hr) = t {
-            return ((0.5 * (hr.normal + Vec3::ones())));
+            return 0.5 * (hr.normal + Vec3::ones());
         }
 
         let unit_dir = ray.direction.as_unit();
@@ -49,7 +49,7 @@ impl Raytracer {
             for y in 0..self.camera.image_height {
                 let mut color: Vec3 = Vec3::zeros();
                 for _ in 0..self.samples_per_pixel {
-                    let ray = self.camera.get_ray_with_offset(x, y, Self::sample_square());
+                    let ray = self.camera.get_ray(x, y, Self::sample_square());
                     color = color + Self::ray_color(ray, world);
                 }
                 imgbuf.put_pixel(x, y,  (self.pixel_samples_scale * color).into());

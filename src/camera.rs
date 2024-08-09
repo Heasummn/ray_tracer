@@ -38,14 +38,7 @@ impl Camera {
     }
   }
 
-  // Makes use of basic trig to convert x/y to camera coords for ray
-  pub fn get_ray(&self, x: u32, y: u32) -> Ray {
-    let pixel_center = self.pixel00_loc + (x as f64 * self.pixel_delta_u) + (y as f64 * self.pixel_delta_v);
-    let direction = pixel_center - self.origin;
-    return Ray::new(self.origin, direction);
-  }
-
-  pub fn get_ray_with_offset(&self, x: u32, y: u32, offset: Vec3) -> Ray {
+  pub fn get_ray(&self, x: u32, y: u32, offset: Vec3) -> Ray {
     let pixel_center = self.pixel00_loc + ((offset.x + x as f64) * self.pixel_delta_u) + ((offset.y + y as f64) * self.pixel_delta_v);
     let direction = pixel_center - self.origin;
 
